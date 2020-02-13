@@ -7,6 +7,7 @@ import UserController from './app/controllers/UserController';
 import FileController from './app/controllers/FileController';
 import RecipientController from './app/controllers/RecipientController';
 import DeliverymanController from './app/controllers/DeliverymanController';
+import ScheduleController from './app/controllers/ScheduleController';
 import DeliveryController from './app/controllers/DeliveryController';
 import SessionController from './app/controllers/SessionController';
 
@@ -26,9 +27,8 @@ routes.post('/files', upload.single('file'), FileController.store);
 
 // Routes for delivery men
 routes.put('/deliverymen', DeliverymanController.update);
-routes.get('/deliverymen/deliveries'); // Listar encomendas com end_date e canceled_at NULOS
-routes.get('/deliverymen/delivered'); // Listar encomendas com end_date !== null (order:[['end_date', 'DESC']])
-routes.put('/deliverymen/deliveries/:id'); // Fazer retirada e finalizar entrega
+routes.get('/deliverymen/deliveries', ScheduleController.index); // 'delivered' query parameter with value 'true' to list delivered orders
+routes.put('/deliverymen/deliveries/:id', ScheduleController.update); // Make product withdrawal and finalize delivery wirh query params
 routes.post('/deliveries/:id/problems');
 
 // Exclusive resources for admin users
@@ -44,9 +44,9 @@ routes.delete('/recipients/:id', RecipientController.destroy);
 // Managing delivery men
 routes.post('/deliverymen', UserController.store);
 routes.put('/deliverymen/:id', UserController.update);
-routes.get('/deliverymen', UserController.index);
-routes.get('/deliverymen/:id', UserController.show);
-routes.delete('/deliverymen/:id', UserController.destroy);
+routes.get('/deliverymen', DeliverymanController.index);
+routes.get('/deliverymen/:id', DeliverymanController.show);
+routes.delete('/deliverymen/:id', DeliverymanController.destroy);
 
 // Managing deliveries
 routes.post('/deliveries', DeliveryController.store);

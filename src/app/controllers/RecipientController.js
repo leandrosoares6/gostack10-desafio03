@@ -68,7 +68,17 @@ class RecipientController {
       state,
     });
 
-    return res.status(200).json(recipient);
+    const { id } = recipient;
+
+    return res.status(200).json({
+      id,
+      zip_code,
+      street,
+      number,
+      complement,
+      city,
+      state,
+    });
   }
 
   async update(req, res) {
@@ -144,7 +154,22 @@ class RecipientController {
   }
 
   async index(req, res) {
-    const recipients = await Recipient.findAll();
+    const { page = 1 } = req.query;
+    const recipients = await Recipient.findAll({
+      order: [['name', 'ASC']],
+      limit: 20,
+      offset: (page - 1) * 20,
+      attributes: [
+        'id',
+        'name',
+        'zip_code',
+        'street',
+        'number',
+        'complement',
+        'city',
+        'state',
+      ],
+    });
     return res.status(200).json(recipients);
   }
 

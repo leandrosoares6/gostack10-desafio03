@@ -80,27 +80,27 @@ class UserController {
   }
 
   async index(req, res) {
-    const deliverymen = await User.findAll({
-      where: {
-        deliveryman: true,
-      },
+    const { page = 1 } = req.query;
+    const users = await User.findAll({
+      order: [['name', 'ASC']],
+      limit: 20,
+      offset: (page - 1) * 20,
       attributes: ['id', 'name', 'email'],
     });
 
-    return res.json(deliverymen);
+    return res.json(users);
   }
 
   async show(req, res) {
-    const deliveryman = await User.findOne({
-      where: { id: req.params.id, deliveryman: true },
+    const users = await User.findOne({
       attributes: ['id', 'name', 'email'],
     });
 
-    if (!deliveryman) {
-      return res.status(404).json({ error: 'Delivery man not found' });
+    if (!users) {
+      return res.status(404).json({ error: 'User not found' });
     }
 
-    return res.json(deliveryman);
+    return res.json(users);
   }
 
   async destroy(req, res) {

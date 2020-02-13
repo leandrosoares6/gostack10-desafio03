@@ -2,6 +2,34 @@ import * as Yup from 'yup';
 import User from '../models/User';
 
 class DeliverymanController {
+  async index(req, res) {
+    const { page = 1 } = req.query;
+    const deliverymen = await User.findAll({
+      where: {
+        deliveryman: true,
+      },
+      order: [['name', 'ASC']],
+      limit: 20,
+      offset: (page - 1) * 20,
+      attributes: ['id', 'name', 'email'],
+    });
+
+    return res.json(deliverymen);
+  }
+
+  async show(req, res) {
+    const deliveryman = await User.findOne({
+      where: { id: req.params.id, deliveryman: true },
+      attributes: ['id', 'name', 'email'],
+    });
+
+    if (!deliveryman) {
+      return res.status(404).json({ error: 'Delivery man not found' });
+    }
+
+    return res.json(deliveryman);
+  }
+
   async update(req, res) {
     const schema = Yup.object().shape({
       name: Yup.string(),
@@ -49,6 +77,20 @@ class DeliverymanController {
       name,
       email,
     });
+  }
+
+  async destroy(req, res) {
+    const deliveryman = await User.findOne({
+      where: { id: req.params.id, deliveryman: true },
+    });
+
+    if (!deliveryman) {
+      return res.status(404).json({ error: 'Delivery man not found' });
+    }
+
+    await deliveryman.destroy();
+
+    return res.status(200).send();
   }
 }
 

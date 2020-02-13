@@ -27,7 +27,7 @@ class DeliveryController {
     const { page = 1 } = req.query;
     const deliveries = await Delivery.findAll({
       where: { canceled_at: null },
-      order: [['created_at', 'DESC']],
+      order: [['created_at', 'ASC']],
       limit: 20,
       offset: (page - 1) * 20,
       attributes: ['id', 'product'],
