@@ -131,7 +131,7 @@ class DeliveryController {
     return res.json(delivery);
   }
 
-  async destroy(req, res) {
+  async delete(req, res) {
     const delivery = await Delivery.findOne({ where: { id: req.params.id } });
 
     if (!delivery) {
@@ -140,7 +140,7 @@ class DeliveryController {
       });
     }
 
-    await delivery.destroy();
+    await delivery.update({ canceled_at: new Date() });
 
     return res.status(200).send();
   }

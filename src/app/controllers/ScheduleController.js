@@ -93,7 +93,7 @@ class ScheduleController {
         },
       });
 
-      if (countDeliveries.count > 5) {
+      if (countDeliveries.count >= 5) {
         return res.status(400).json({
           error: 'Delivery men can only make 5 withdrawal per day',
         });
