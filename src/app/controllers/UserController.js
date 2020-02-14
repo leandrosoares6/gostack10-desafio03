@@ -1,5 +1,9 @@
 import * as Yup from 'yup';
+import generator from 'generate-password';
 import User from '../models/User';
+
+import SendCredentials from '../jobs/SendCredentials';
+import Queue from '../../lib/Queue';
 
 class UserController {
   async store(req, res) {
@@ -8,9 +12,6 @@ class UserController {
       email: Yup.string()
         .email()
         .required(),
-      password: Yup.string()
-        .required()
-        .min(6),
     });
 
     if (!(await schema.isValid(req.body))) {
@@ -26,8 +27,21 @@ class UserController {
         error: 'User already exists',
       });
     }
+    req.body.password = generator.generate({
+      length: 6,
+      numbers: true,
+      lowercase: true,
+      uppercase: true,
+      strict: true,
+    });
+
+    const deliveryman = req.body;
 
     const { id, name, email } = await User.create(req.body);
+
+    await Queue.add(SendCredentials.key, {
+      deliveryman,
+    });
 
     return res.status(200).json({
       id,
