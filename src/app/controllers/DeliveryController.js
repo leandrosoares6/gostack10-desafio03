@@ -1,8 +1,12 @@
 import * as Yup from 'yup';
+import { format } from 'date-fns';
+import pt from 'date-fns/locale/pt';
+
 import Delivery from '../models/Delivery';
 import User from '../models/User';
 import Recipient from '../models/Recipient';
 import File from '../models/File';
+import Notification from '../schemas/Notification';
 
 class DeliveryController {
   async store(req, res) {
@@ -17,9 +21,38 @@ class DeliveryController {
         error: 'Validation fails',
       });
     }
+
+    const { recipient_id, deliveryman_id } = req.body;
+
+    const deliveryman = await User.findOne({ where: { id: deliveryman_id } });
+    const recipient = await Recipient.findOne({ where: { id: recipient_id } });
+
+    if (!deliveryman) {
+      return res.status(404).json({ error: 'Delivery man not found' });
+    }
+
+    if (!recipient) {
+      return res.status(404).json({ error: 'Recipient not found' });
+    }
+
     const delivery = await Delivery.create(req.body);
 
-    // Implementar aqui o envio do email/notificacao para o entregador
+    /**
+     * Notify delivery man
+     */
+    const formattedDate = format(new Date(), "dd 'de' MMMM', às' H:mm'h'", {
+      locale: pt,
+    });
+
+    await Notification.create({
+      content: `Nova encomenda registrada em ${formattedDate}`,
+      user: deliveryman_id,
+    });
+
+    /**
+     * Implementar aqui envio de email
+     */
+
     return res.json(delivery);
   }
 
@@ -131,7 +164,7 @@ class DeliveryController {
     return res.json(delivery);
   }
 
-  async delete(req, res) {
+  async destroy(req, res) {
     const delivery = await Delivery.findOne({ where: { id: req.params.id } });
 
     if (!delivery) {
@@ -140,7 +173,7 @@ class DeliveryController {
       });
     }
 
-    await delivery.update({ canceled_at: new Date() });
+    await delivery.destroy();
 
     return res.status(200).send();
   }

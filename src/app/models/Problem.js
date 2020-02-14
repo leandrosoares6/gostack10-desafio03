@@ -7,6 +7,7 @@ class Problem extends Model {
         description: Sequelize.STRING,
       },
       {
+        tableName: 'deliveries_problems',
         sequelize,
       }
     );

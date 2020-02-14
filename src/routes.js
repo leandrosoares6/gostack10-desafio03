@@ -7,6 +7,7 @@ import UserController from './app/controllers/UserController';
 import FileController from './app/controllers/FileController';
 import RecipientController from './app/controllers/RecipientController';
 import DeliverymanController from './app/controllers/DeliverymanController';
+import NotificationController from './app/controllers/NotificationController';
 import ScheduleController from './app/controllers/ScheduleController';
 import DeliveryController from './app/controllers/DeliveryController';
 import ProblemController from './app/controllers/ProblemController';
@@ -31,6 +32,8 @@ routes.put('/deliverymen', DeliverymanController.update);
 routes.get('/deliverymen/deliveries', ScheduleController.index); // 'delivered' query parameter with value 'true' to list delivered orders
 routes.put('/deliverymen/deliveries/:id', ScheduleController.update); // Make product withdrawal and finalize delivery with query params
 routes.post('/deliveries/:id/problems', ProblemController.store);
+routes.get('/notifications', NotificationController.index);
+routes.put('/notifications/:id', NotificationController.update);
 
 // Exclusive resources for admin users
 routes.use(checkUserAdmin);
@@ -54,7 +57,9 @@ routes.post('/deliveries', DeliveryController.store);
 routes.put('/deliveries/:id', DeliveryController.update);
 routes.get('/deliveries', DeliveryController.index);
 routes.get('/deliveries/:id', DeliveryController.show);
-routes.delete('/deliveries/:id', DeliveryController.delete);
-routes.get('/deliveries/:id/problems', ProblemController.index);
+routes.delete('/deliveries/:id', DeliveryController.destroy);
+routes.get('/problems', ProblemController.index);
+routes.get('/deliveries/:id/problems', ProblemController.show);
+routes.delete('/problems/:id', ProblemController.delete);
 
 export default routes;
