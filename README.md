@@ -26,9 +26,9 @@ Tecnologias:
 
 -> axios - Ferramenta para realização de integração com outras APIs, neste caso para obtenção de endereços através de CEP;
 
--> dotenv - Biblioteca utilizada para centralizar nossas variáveis de ambiente;
+-> dotenv - Biblioteca utilizada para organizar variáveis de ambiente;
 
--> multer - biblioteca para upload de arquivos, neste projeto o envio dos avatares dos usuários e as assinaturas após entrega;
+-> multer - biblioteca para upload de arquivos, neste projeto o envio dos avatares dos usuários e as assinaturas dos destinatários após a entrega;
 
 -> sentry - geração de logs de erros
 
