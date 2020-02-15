@@ -2,7 +2,7 @@
 
 Este projeto foi desenvolvido baseado no desafio 03 do Bootcamp GoStack 10 da Rocketseat.
 
-Link do desafio:https://github.com/Rocketseat/bootcamp-gostack-desafio-03/blob/master/README.md#desafio-03-continuando-aplica%C3%A7%C3%A3o
+Link do desafio: https://github.com/Rocketseat/bootcamp-gostack-desafio-03/blob/master/README.md#desafio-03-continuando-aplica%C3%A7%C3%A3o
 
 Se trata de uma API Rest para gerenciamento de entregas de encomendas, envolvendo cadastro de destinatários, entregadores, problemas nas entregas, envio de notificações e emails.
 
