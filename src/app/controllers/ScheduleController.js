@@ -2,6 +2,7 @@ import { Op } from 'sequelize';
 import { startOfDay, endOfDay, getHours } from 'date-fns';
 import Recipient from '../models/Recipient';
 import Delivery from '../models/Delivery';
+// import File from '../models/File';
 
 class ScheduleController {
   async index(req, res) {
@@ -118,6 +119,21 @@ class ScheduleController {
     }
 
     if (!pickup && finish === 'true') {
+      /**
+       * Verify if signature has been uploaded before finalizing the delivery
+       */
+      /* if (!req.file) {
+        return res.status(400).json({
+          error:
+            "To complete the delivery, the recipient's signature must be sent",
+        });
+      }
+      const { originalname: name, filename: path } = req.file;
+      const { id } = await File.create({
+        name,
+        path,
+      }); */
+
       const delivery = await Delivery.findOne({
         where: {
           id: req.params.id,

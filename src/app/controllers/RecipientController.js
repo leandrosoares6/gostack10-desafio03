@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import axios from 'axios';
+// import axios from 'axios';
 import Recipient from '../models/Recipient';
 
 class RecipientController {
@@ -22,8 +22,16 @@ class RecipientController {
       });
     }
 
-    const { name, zip_code, street, number } = req.body;
-    let { complement, city, state } = req.body;
+    const {
+      name,
+      zip_code,
+      street,
+      number,
+      complement,
+      city,
+      state,
+    } = req.body;
+    /* let { complement, city, state } = req.body;
 
     const apiResponse = await axios.get(
       `https://viacep.com.br/ws/${zip_code}/json/`
@@ -56,7 +64,7 @@ class RecipientController {
     }
     if (!state) {
       state = uf;
-    }
+    } */
 
     const recipient = await Recipient.create({
       name,
@@ -108,7 +116,7 @@ class RecipientController {
       });
     }
 
-    const {
+    /* const {
       name,
       zip_code,
       street,
@@ -146,9 +154,9 @@ class RecipientController {
 
     if (state) {
       fields.state = state;
-    }
+    } */
 
-    const recipientUpdated = await recipient.update(fields);
+    const recipientUpdated = await recipient.update(req.body);
 
     return res.status(200).json(recipientUpdated);
   }
