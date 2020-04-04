@@ -47,6 +47,10 @@ routes.put('/notifications/:id', NotificationController.update);
 // Exclusive resources for admin users
 routes.use(checkUserAdmin);
 
+// Managin admin users
+routes.post('/users', UserController.store);
+routes.put('/users', UserController.update);
+
 // Managing recipients
 routes.post('/recipients', RecipientController.store);
 routes.put('/recipients/:id', RecipientController.update);

@@ -1,6 +1,7 @@
 import * as Yup from 'yup';
 import generator from 'generate-password';
 import User from '../models/User';
+import File from '../models/File';
 
 import SendCredentials from '../jobs/SendCredentials';
 import Queue from '../../lib/Queue';
@@ -66,6 +67,26 @@ class UserController {
       });
     }
 
+    /**
+     * Atualizar meu perfil de admin
+     */
+    if (req.params.id === null) {
+      const { email } = req.body;
+
+      if (email) {
+        const userExists = await User.findOne({ where: { email } });
+
+        if (userExists) {
+          return res.status(400).json({
+            error: 'User already exists',
+          });
+        }
+      }
+    }
+
+    /**
+     * Atualização de entregadores
+     */
     const { email } = req.body;
 
     const user = await User.findOne({ where: { id: req.params.id } });
@@ -84,12 +105,23 @@ class UserController {
       }
     }
 
-    const { id, name } = await user.update(req.body);
+    await user.update(req.body);
+
+    const { id, name, avatar } = await User.findByPk(req.userId, {
+      include: [
+        {
+          model: File,
+          as: 'avatar',
+          attributes: ['id', 'path', 'url'],
+        },
+      ],
+    });
 
     return res.status(200).json({
       id,
       name,
       email,
+      avatar,
     });
   }
 
