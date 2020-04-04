@@ -1,5 +1,7 @@
 import { Router } from 'express';
 
+import Brute from 'express-brute';
+import BruteRedis from 'express-brute-redis';
 import multer from 'multer';
 import multerConfig from './config/multer';
 
@@ -19,8 +21,15 @@ import checkUserAdmin from './app/middlewares/checkAdmin';
 const routes = new Router();
 const upload = multer(multerConfig);
 
+const bruteStore = new BruteRedis({
+  host: process.env.REDIS_HOST,
+  port: process.env.REDIS_PORT,
+});
+
+const bruteForce = new Brute(bruteStore);
+
 // Getting sessions for registred users
-routes.post('/sessions', SessionController.store);
+routes.post('/sessions', bruteForce.prevent, SessionController.store);
 
 // Middleware to verify session with valid JWT token
 routes.use(authMiddleware);
