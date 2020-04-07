@@ -1,3 +1,4 @@
+import { Op } from 'sequelize';
 import * as Yup from 'yup';
 import { format } from 'date-fns';
 import pt from 'date-fns/locale/pt';
@@ -57,7 +58,52 @@ class DeliveryController {
   }
 
   async index(req, res) {
-    const { page = 1 } = req.query;
+    const { page = 1, q } = req.query;
+
+    if (q) {
+      const deliveries = await Delivery.findAll({
+        where: {
+          canceled_at: null,
+          product: {
+            [Op.iLike]: `%${q}`,
+          },
+        },
+        order: [['created_at', 'ASC']],
+        limit: 20,
+        offset: (page - 1) * 20,
+        attributes: ['id', 'product'],
+        include: [
+          {
+            model: User,
+            as: 'deliveryman',
+            attributes: ['id', 'name'],
+            include: [
+              {
+                model: File,
+                as: 'avatar',
+                attributes: ['id', 'path', 'url'],
+              },
+            ],
+          },
+          {
+            model: Recipient,
+            as: 'recipient',
+            attributes: [
+              'id',
+              'name',
+              'zip_code',
+              'street',
+              'number',
+              'complement',
+              'city',
+              'state',
+            ],
+          },
+        ],
+      });
+
+      return res.json(deliveries);
+    }
     const deliveries = await Delivery.findAll({
       where: { canceled_at: null },
       order: [['created_at', 'ASC']],

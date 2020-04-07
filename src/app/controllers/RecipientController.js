@@ -1,3 +1,4 @@
+import { Op } from 'sequelize';
 import * as Yup from 'yup';
 // import axios from 'axios';
 import Recipient from '../models/Recipient';
@@ -162,7 +163,33 @@ class RecipientController {
   }
 
   async index(req, res) {
-    const { page = 1 } = req.query;
+    const { page = 1, q } = req.query;
+
+    if (q) {
+      const recipients = await Recipient.findAll({
+        where: {
+          name: {
+            [Op.iLike]: `%${q}`,
+          },
+        },
+        order: [['name', 'ASC']],
+        limit: 20,
+        offset: (page - 1) * 20,
+        attributes: [
+          'id',
+          'name',
+          'zip_code',
+          'street',
+          'number',
+          'complement',
+          'city',
+          'state',
+        ],
+      });
+
+      return res.status(200).json(recipients);
+    }
+
     const recipients = await Recipient.findAll({
       order: [['name', 'ASC']],
       limit: 20,
@@ -178,6 +205,7 @@ class RecipientController {
         'state',
       ],
     });
+
     return res.status(200).json(recipients);
   }
 
