@@ -1,4 +1,4 @@
-import { Op } from 'sequelize';
+import { Op, Sequelize } from 'sequelize';
 import * as Yup from 'yup';
 import { format } from 'date-fns';
 import pt from 'date-fns/locale/pt';
@@ -58,20 +58,32 @@ class DeliveryController {
   }
 
   async index(req, res) {
-    const { page = 1, q } = req.query;
+    const { page = 1, linesPerPage = 6, q } = req.query;
 
     if (q) {
-      const deliveries = await Delivery.findAll({
-        where: {
-          canceled_at: null,
+      const deliveries = await Delivery.findAndCountAll({
+        /* where: {
           product: {
-            [Op.iLike]: `%${q}`,
+            [Op.iLike]: `%${q}%`,
           },
-        },
+        }, */
+        where: Sequelize.where(
+          Sequelize.fn('unaccent', Sequelize.col('product')),
+          {
+            [Op.iLike]: `%${q}%`,
+          }
+        ),
         order: [['created_at', 'ASC']],
-        limit: 20,
-        offset: (page - 1) * 20,
-        attributes: ['id', 'product'],
+        limit: linesPerPage,
+        offset: (page - 1) * linesPerPage,
+        attributes: [
+          'id',
+          'product',
+          'canceled_at',
+          'start_date',
+          'end_date',
+          'status',
+        ],
         include: [
           {
             model: User,
@@ -104,12 +116,18 @@ class DeliveryController {
 
       return res.json(deliveries);
     }
-    const deliveries = await Delivery.findAll({
-      where: { canceled_at: null },
+    const deliveries = await Delivery.findAndCountAll({
       order: [['created_at', 'ASC']],
-      limit: 20,
-      offset: (page - 1) * 20,
-      attributes: ['id', 'product'],
+      limit: linesPerPage,
+      offset: (page - 1) * linesPerPage,
+      attributes: [
+        'id',
+        'product',
+        'canceled_at',
+        'start_date',
+        'end_date',
+        'status',
+      ],
       include: [
         {
           model: User,
@@ -146,7 +164,14 @@ class DeliveryController {
   async show(req, res) {
     const delivery = await Delivery.findOne({
       where: { id: req.params.id },
-      attributes: ['id', 'product'],
+      attributes: [
+        'id',
+        'product',
+        'canceled_at',
+        'start_date',
+        'end_date',
+        'status',
+      ],
       include: [
         {
           model: User,
@@ -219,7 +244,9 @@ class DeliveryController {
       });
     }
 
-    await delivery.destroy();
+    await delivery.update({
+      canceled_at: new Date(),
+    });
 
     return res.status(200).send();
   }

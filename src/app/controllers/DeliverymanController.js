@@ -4,7 +4,7 @@ import User from '../models/User';
 
 class DeliverymanController {
   async index(req, res) {
-    const { page = 1, q } = req.query;
+    const { page = 1, linesPerPage = 6, q } = req.query;
 
     if (q) {
       const deliverymen = await User.findAll({
@@ -15,8 +15,8 @@ class DeliverymanController {
           },
         },
         order: [['name', 'ASC']],
-        limit: 20,
-        offset: (page - 1) * 20,
+        limit: linesPerPage,
+        offset: (page - 1) * linesPerPage,
         attributes: ['id', 'name', 'email'],
       });
 
@@ -28,8 +28,8 @@ class DeliverymanController {
         deliveryman: true,
       },
       order: [['name', 'ASC']],
-      limit: 20,
-      offset: (page - 1) * 20,
+      limit: linesPerPage,
+      offset: (page - 1) * linesPerPage,
       attributes: ['id', 'name', 'email'],
     });
 

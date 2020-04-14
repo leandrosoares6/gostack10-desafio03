@@ -70,13 +70,13 @@ class UserController {
     /**
      * Atualizar meu perfil de admin
      */
-    if (req.params.id === null) {
+    if (!req.params.id) {
       const { email } = req.body;
 
       if (email) {
         const userExists = await User.findOne({ where: { email } });
 
-        if (userExists) {
+        if (userExists && userExists.id !== req.userId) {
           return res.status(400).json({
             error: 'User already exists',
           });

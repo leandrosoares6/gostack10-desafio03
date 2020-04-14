@@ -163,7 +163,7 @@ class RecipientController {
   }
 
   async index(req, res) {
-    const { page = 1, q } = req.query;
+    const { page = 1, linesPerPage = 6, q } = req.query;
 
     if (q) {
       const recipients = await Recipient.findAll({
@@ -173,8 +173,8 @@ class RecipientController {
           },
         },
         order: [['name', 'ASC']],
-        limit: 20,
-        offset: (page - 1) * 20,
+        limit: linesPerPage,
+        offset: (page - 1) * linesPerPage,
         attributes: [
           'id',
           'name',
@@ -192,8 +192,8 @@ class RecipientController {
 
     const recipients = await Recipient.findAll({
       order: [['name', 'ASC']],
-      limit: 20,
-      offset: (page - 1) * 20,
+      limit: linesPerPage,
+      offset: (page - 1) * linesPerPage,
       attributes: [
         'id',
         'name',

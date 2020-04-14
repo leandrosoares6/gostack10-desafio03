@@ -1,3 +1,4 @@
+import * as Yup from 'yup';
 import { Op } from 'sequelize';
 import { startOfDay, endOfDay, getHours } from 'date-fns';
 import Recipient from '../models/Recipient';
@@ -74,9 +75,20 @@ class ScheduleController {
   }
 
   async update(req, res) {
-    const { pickup, finish } = req.query;
+    const schema = Yup.object().shape({
+      started: Yup.boolean(),
+      finished: Yup.boolean(),
+    });
 
-    if (!finish && pickup === 'true') {
+    if (!(await schema.isValid(req.body))) {
+      return res.status(400).json({
+        error: 'Validations fails',
+      });
+    }
+
+    const { started, finished } = req.body;
+
+    if (started) {
       const hour = getHours(new Date());
 
       if (hour < 8 || hour > 18) {
@@ -113,12 +125,12 @@ class ScheduleController {
         return res.status(404).json({ error: 'Delivery not found' });
       }
 
-      await delivery.update({ start_date: new Date() });
+      await delivery.update({ started: true });
 
       return res.json(delivery);
     }
 
-    if (!pickup && finish === 'true') {
+    if (finished) {
       /**
        * Verify if signature has been uploaded before finalizing the delivery
        */
@@ -150,7 +162,7 @@ class ScheduleController {
         return res.status(404).json({ error: 'Delivery not found' });
       }
 
-      await delivery.update({ end_date: new Date() });
+      await delivery.update({ finished: true });
 
       return res.json(delivery);
     }

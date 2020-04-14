@@ -12,7 +12,7 @@ import File from '../models/File'; */
 
 class ProblemController {
   async index(req, res) {
-    const { page = 1 } = req.query;
+    const { page = 1, linesPerPage = 6 } = req.query;
     /* const allProblems = await Problem.findAll({
       order: [['created_at', 'ASC']],
       limit: 20,
@@ -62,8 +62,8 @@ class ProblemController {
 
     const allProblems = await Problem.findAll({
       order: [['created_at', 'ASC']],
-      limit: 20,
-      offset: (page - 1) * 20,
+      limit: linesPerPage,
+      offset: (page - 1) * linesPerPage,
       attributes: ['id', 'description'],
       include: [
         {
